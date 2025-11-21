@@ -154,7 +154,7 @@ Planned nodes include:
 ### Installation
 
 ```bash
-git clone https://github.com/<your-username>/Code-Analyser
+git clone https://github.com/bhomik749/Code-Analyser
 cd Code-Analyser
 pip install -r requirements.txt
 ```
