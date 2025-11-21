@@ -1,4 +1,4 @@
-# Code-Analyser
+## Code-Analyser
 
 **Code-Analyser** is a modular, extensible system designed to analyze GitHub repositories using reasoning capabilities of Gemini-2.5-flash and a LangGraph-based multi-step workflow.
 
@@ -8,7 +8,7 @@ This project is under active development.
 
 ---
 
-## Overview
+### Overview
 
 Code-Analyser performs a structured series of steps to understand and query any codebase:
 
@@ -24,9 +24,9 @@ The workflow is orchestrated using **LangGraph**, providing controlled, multi-st
 
 ---
 
-## Features
+### Features
 
-### Current Capabilities
+#### Current Capabilities
 
 - GitHub repository metadata extraction  
 - File tree construction  
@@ -43,7 +43,7 @@ The workflow is orchestrated using **LangGraph**, providing controlled, multi-st
 
 ---
 
-## Repository Structure
+### Repository Structure
 
 ```text
 Code-Analyser/
@@ -80,23 +80,23 @@ Code-Analyser/
 ├── requirements.txt
 └── README.md
 ```
-## Workflow
+### Workflow
 
 The agent executes a multi-step LangGraph pipeline:
 
-### 1. `fetch_repo_metadata_node`
+#### 1. `fetch_repo_metadata_node`
 Fetches the GitHub repository tree and builds structured metadata.
 
-### 2. `analyze_repo_node`
+#### 2. `analyze_repo_node`
 Selects relevant files based on keywords extracted from the user's question.
 
-### 3. `fetch_and_parse_node`
+#### 3. `fetch_and_parse_node`
 Downloads raw file contents and parses them into structured representations.
 
-### 4. `global_context_node`
+#### 4. `global_context_node`
 Produces a high-level summary of the repository.
 
-### 5. `summarize_repo_node`
+#### 5. `summarize_repo_node`
 Generates a final answer using:
 - selected files  
 - parsed content  
@@ -108,24 +108,24 @@ This node will later be replaced by a more advanced final-answer builder.
 
 ---
 
-## CLI Usage
+### CLI Usage
 
 Run analysis from the command line:
 
 ```bash
 python run_cli.py <repo_url>
 ```
-## Future Additions
+### Future Additions
 
 Code-Analyser will evolve into a complete, multi-skill code analysis agent.  
 The following components are planned for upcoming releases.
 
-### Query Understanding
+#### Query Understanding
 - Intent classification (function usage, type lookup, pipeline flow, directory analysis)
 - Keyword extraction
 - Query decomposition
 
-### Deep Code Analysis
+#### Deep Code Analysis
 - Symbol extraction (functions, classes, variables, imports)
 - Function usage tracing
 - Type inference for variables
@@ -133,7 +133,7 @@ The following components are planned for upcoming releases.
 - Directory-level purpose identification
 - Import dependency graph extraction
 
-### Specialized Skill Nodes
+#### Specialized Skill Nodes
 
 Planned nodes include:
 - `query_analyzer_node`
@@ -145,13 +145,13 @@ Planned nodes include:
 - `final_answer_builder_node`
 - Optional: `dependency_graph_node`
 
-### API and UI Layer
+#### API and UI Layer
 - FastAPI backend for streaming responses
 - Web-based multi-turn chat interface
 
 ---
 
-## Installation
+### Installation
 
 ```bash
 git clone https://github.com/<your-username>/Code-Analyser
