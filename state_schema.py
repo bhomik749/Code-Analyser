@@ -3,7 +3,7 @@
 from typing import Annotated, Sequence, TypedDict, Union, Dict, List
 from langgraph.graph.message import add_messages
 from langchain_core.messages import BaseMessage
-from scripts.repo_parser.config.settings import LLM
+from src.config.settings import LLM
 
 
 class Agent_State(TypedDict):
@@ -12,30 +12,15 @@ class Agent_State(TypedDict):
     
     This is the central shared memory between all nodes.
     """
-
-    # Conversation memory (multi-chat)
     messages: Annotated[Sequence[BaseMessage], add_messages]
-
-    # GitHub repo input
     url: Union[str, None]
-
-    # Metadata tree returned by GitRepoParser
     repo_tree: Dict[str, any]
-
-    # High-level global context summary
     global_context: Union[str, None]
-
-    # Files selected after query-aware filtering
     selected_files: List[Dict[str, any]]
-
-    # Files skipped due to size/type
     skipped_files: List[str]
-
-    # Parsed file contents (LLM-friendly)
     parsed_files: List[Dict[str, str]]
-
-    # Final summarization or answer from LLM
-    summary: Annotated[Sequence[BaseMessage], add_messages]
-
-    # LLM instance injected into state
+    intent: str
+    keywords: List[str]
+    targets: Dict[str, any]
+    summary: str #Annotated[Sequence[BaseMessage], add_messages]
     llm: LLM

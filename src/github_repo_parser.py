@@ -4,7 +4,7 @@ in textual form.
 """
 import os
 import requests
-from scripts.repo_parser.config.settings import GITHUB_TOKEN, EXCLUDE_EXT
+from src.config.settings import GITHUB_TOKEN, EXCLUDE_EXT
 
 
 class GitRepoParser:

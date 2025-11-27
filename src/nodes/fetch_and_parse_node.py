@@ -1,9 +1,9 @@
 from langchain_core.messages import SystemMessage
-from scripts.repo_parser.tools.parse_python import parse_python
-from scripts.repo_parser.tools.parse_markdown import parse_markdown
-from scripts.repo_parser.tools.parse_notebook import parse_notebook
-from scripts.repo_parser.tools.parse_json_yaml import parse_json_yaml
-from scripts.repo_parser.utils.fetch_blob import fetch_blob_content
+from src.tools.parse_python import parse_python
+from src.tools.parse_markdown import parse_markdown
+from src.tools.parse_notebook import parse_notebook
+from src.tools.parse_json_yaml import parse_json_yaml
+from src.utils.fetch_blob import fetch_blob_content
 
 
 

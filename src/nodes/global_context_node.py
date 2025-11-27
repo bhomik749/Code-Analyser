@@ -1,7 +1,7 @@
 import base64
 import requests
 from langchain_core.messages import SystemMessage, HumanMessage
-from scripts.repo_parser.utils.flatten_tree import flatten_tree
+from src.utils.flatten_tree import flatten_tree
 
 async def global_context_node(state: dict)->dict: #AgentState)->AgentState
     """

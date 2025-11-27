@@ -1,6 +1,6 @@
 # nodes/fetch_repo_metadata_node.py
 from langchain_core.messages import SystemMessage
-from scripts.repo_parser.github_repo_parser import GitRepoParser
+from src.github_repo_parser import GitRepoParser
 
 async def fetch_repo_metadata_node(state: dict) -> dict:
     """
