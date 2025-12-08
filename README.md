@@ -1,8 +1,15 @@
 ## Code-Analyser
 
-**Code-Analyser** is a modular, extensible system designed to analyze GitHub repositories using reasoning capabilities of Gemini-2.5-flash and a LangGraph-based multi-step workflow.
+Code-Analyser is a multi-phase code understanding engine designed to analyze GitHub repositories and answer user questions interactively with the backend of Langgraph.
 
-It enables deep code understanding, including directory inspection, function usage tracing, pipeline flow extraction, type inference, dependency mapping, and multi-turn conversational analysis.
+Currently, the system is capable of performing following tasks:
+
+- Repository Indexing
+- Incremental Code Parsing
+- Query-Aware file selection
+- Multi-turn Q&A
+
+The project is optimized for long-term exploration of large repositories. The more you chat, the more code gets parsed, making future answers faster and richer.
 
 This project is under active development.
 
@@ -10,42 +17,59 @@ This project is under active development.
 
 ### Overview
 
-The overall flow of the pipeline is illustrated in the image below:
+**Core Functionality**
 
-<img width="2176" height="2395" alt="code_analyser_pipeline" src="https://github.com/user-attachments/assets/5e4530c5-189a-4796-a9a5-a3a8241cfc4a" />
+- Fetch the complete GitHub repository structure
+- Generate a high-level global context for the repo
+- Extract and parse file contents incrementally
+- Support arbitrary user questions
+- Use intents, keywords, and targets through the provided user prompt, to select the relevant files.
+- Multi-turn conversational question answering
 
-Code-Analyser performs a structured series of steps to understand and query any codebase:
+**Architecture Highlights**
 
-- Fetches a full GitHub repository structure  
-- Selects relevant files based on user intent  
-- Downloads and parses code files  
-- Extracts functions, classes, variables, and imports  
-- Builds a structured internal representation  
-
-- Applies specialized skills depending on the question  
-- Produces an accurate, context-aware answer
-
-The workflow is orchestrated using **LangGraph**, providing controlled, multi-step reasoning.
-
+- Two-phase Langgraph workflow:
+  - Indexing Phase
+  - QA Phase
+- Incremental Parsing to avoid repeated processing
 ---
 
-### Features
+### How it works
 
-#### Current Capabilities
+The system is split into two workflows:
 
-- GitHub repository metadata extraction  
-- File tree construction  
-- Raw file content fetching  
-- Keyword-based file selection  
-- Parsing support for:
-  - Python
-  - Markdown
-  - JSON / YAML
-  - Jupyter Notebooks  
-- Global repository context generation  
-- Multi-turn conversation memory  
-- Basic question answering & summarization
+1. Indexing workflow
 
+Runs ONCE per repository when the user loads a new repo.
+
+<img width="256" height="1024" alt="indexing_pipeline_flowchart" src="https://github.com/user-attachments/assets/f5a0d609-2e1e-42d1-9739-b7df265e1d41" />
+
+**Purpose**
+
+- Crawl the Repository
+- Build `repo_tree`
+- Create Global Context for the whole repository
+- Select initial important files
+- Parse them
+- Store everything in `repo_state` state variable
+- Reuse this for all future questions
+
+2. QA Workflow
+  
+Runs for EVERY question the user asks
+
+<img width="256" height="1024" alt="QA_pipeline_flowchart" src="https://github.com/user-attachments/assets/f6c327c7-2a4a-412e-9dbe-bf1bf2d9f27d" />
+
+
+**Purpose**
+
+- Interpret the user's question
+- Select relevant files, based on user's query using `keywords`, `intent` and `target` variables
+- Parse only new files
+- Produce final answer using:
+  - parsed code
+  - global context
+  - conversation history
 ---
 
 ### Repository Structure
@@ -53,20 +77,21 @@ The workflow is orchestrated using **LangGraph**, providing controlled, multi-st
 ```text
 Code-Analyser/
 │
-├── langgraph_app.py                # LangGraph pipeline definition
-├── run_cli.py                      # CLI entrypoint
-├── state_schema.py                 # Graph state structure
+├── run_cli.py                    
+├── langgraph_app.py              
+├── state_schema.py                
 │
 ├── src/
 │   ├── config/
-│   │   └── settings.py             # API keys, constants, settings
+│   │   └── settings.py            
 │   │
-│   ├── github_repo_parser.py       # GitHub metadata + raw file fetcher
+│   ├── github_repo_parser.py      
 │   │
 │   ├── nodes/
 │   │   ├── fetch_repo_metadata_node.py
-│   │   ├── analyze_repo_node.py
 │   │   ├── global_context_node.py
+│   │   ├── query_analyzer_node.py
+│   │   ├── analyze_repo_node.py
 │   │   ├── fetch_and_parse_node.py
 │   │   └── summarize_repo_node.py
 │   │
@@ -84,76 +109,50 @@ Code-Analyser/
 │
 ├── requirements.txt
 └── README.md
+
 ```
-### Workflow
-
-The agent executes a multi-step LangGraph pipeline:
-
-#### 1. `fetch_repo_metadata_node`
-Fetches the GitHub repository tree and builds structured metadata.
-
-#### 2. `analyze_repo_node`
-Selects relevant files based on keywords extracted from the user's question.
-
-#### 3. `fetch_and_parse_node`
-Downloads raw file contents and parses them into structured representations.
-
-#### 4. `global_context_node`
-Produces a high-level summary of the repository.
-
-#### 5. `summarize_repo_node`
-Generates a final answer using:
-- selected files  
-- parsed content  
-- global context  
-- current user query  
-- conversation history  
-
-This node will later be replaced by a more advanced final-answer builder.
-
 ---
+### Usage
 
-### CLI Usage
-
-Run analysis from the command line:
+1. Index the repository
 
 ```bash
-python run_cli.py <repo_url>
+python run_cli.py https://github.com/<owner>/<repo>
 ```
+
+The system will crawl the repo, parse initial files, and store everything in memory.
+
+2. Multi-Chat Functionality
+After Indexing is done:
+
+```bash
+You: Where is the pipeline implemented?
+Agent: ...
+You: Explain preprocess.py
+Agent: ...
+You: Which function loads the model?
+Agent: ...
+```
+Each question uses:
+- cached parsed files
+- incremental parsing
+- multi-chat contenxt
+---
+
 ### Future Additions
 
-Code-Analyser will evolve into a complete, multi-skill code analysis agent.  
-The following components are planned for upcoming releases.
-
-#### Query Understanding
-- Intent classification (function usage, type lookup, pipeline flow, directory analysis)
-- Keyword extraction
-- Query decomposition
-
-#### Deep Code Analysis
-- Symbol extraction (functions, classes, variables, imports)
-- Function usage tracing
-- Type inference for variables
-- Pipeline flow reconstruction
-- Directory-level purpose identification
-- Import dependency graph extraction
-
-#### Specialized Skill Nodes
-
-Planned nodes include:
-- `query_analyzer_node`
-- `symbol_extractor_node`
-- `function_usage_node`
-- `type_lookup_node`
-- `pipeline_flow_node`
-- `directory_inspector_node`
-- `final_answer_builder_node`
-- Optional: `dependency_graph_node`
-
-#### API and UI Layer
-- FastAPI backend for streaming responses
-- Web-based multi-turn chat interface
-
+1. In-depth code analysis
+   - Symbol extraction(classes, functions, globals)
+   - Function usage tracing
+   - Type inference
+   - Module-level dependency graphs
+2. Query Understanding
+4. Persistant Layer
+   - Store indexed repos in local DB
+   - Avoid repeating indexing on restart
+6. Backend and UI
+   - FastAPI server
+   - Chat-based frontend
 ---
 
 ### Installation
@@ -163,9 +162,17 @@ git clone https://github.com/bhomik749/Code-Analyser
 cd Code-Analyser
 pip install -r requirements.txt
 ```
-Set environment variables (GitHub token, LLM keys) in a `.env` file.
+Set environment variables in a `.env` file. 
+- GitHub token
+- LLM keys 
 
 ### Contributing
 
 Contributions are welcome.
-New analysis nodes, tools, and improvements are encouraged.
+
+Feel free to open issues or PRs for:
+
+- New analysis nodes
+- Better parsing logic
+- UI components
+- Documentation improvements
