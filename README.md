@@ -165,6 +165,7 @@ pip install -r requirements.txt
 Set environment variables in a `.env` file. 
 - GitHub token
 - LLM keys 
+---
 
 ### Contributing
 
