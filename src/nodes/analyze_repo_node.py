@@ -18,7 +18,7 @@ async def analyze_tree_node(state: dict) -> dict:
       - file sizes and extensions
     """
 
-    print("Initializing Analyze Tree Node...")
+    # print("Initializing Analyze Tree Node...")
 
     repo_tree = state.get("repo_tree", None)
     intent = state.get("intent")
@@ -40,23 +40,24 @@ async def analyze_tree_node(state: dict) -> dict:
             user_query = msg.content.lower()
             break
 
-    print(f"Latest user query: {user_query}")
+    # print(f"Latest user query: {user_query}")
 
     # Get words like ["train", "metrics", "dataset", "model"]
     query_keywords = re.findall(r"[a-zA-Z_]+", user_query)
     # print(f"Extracted query keywords: {query_keywords}")
 
-    selected, skipped = [], []
+    selected = state.get("selected_files")
+    skipped = state.get("skipped_files")
 
     for meta in flattened:
         path = meta["path"].lower()
-        size = meta["size_kb"]
+        # size = meta["size_kb"]
         ext  = meta["ext"].lower()
 
         # Skip too-large files
-        if size > MAX_SIZE_KB:
-            skipped.append(path)
-            continue
+        # if size > MAX_SIZE_KB:
+        #     skipped.append(path)
+        #     continue
 
         # Always include important names
         if any(key in path for key in IMPORTANT_NAMES):
@@ -124,7 +125,7 @@ async def analyze_tree_node(state: dict) -> dict:
                 selected.append(meta)
                 continue
 
-    print(f"Selected {len(selected)} files, skipped {len(skipped)}.")
+    print(f"\nSelected {len(selected)} files, skipped {len(skipped)}.")
 
     return {
         "selected": selected,

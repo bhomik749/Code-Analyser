@@ -31,11 +31,13 @@ index_app = indexing_workflow.compile()
 
 qa_workflow.add_node("query_analyzer", query_analyser_node)
 qa_workflow.add_node("analyze_tree", analyze_tree_node)
+qa_workflow.add_node("fetch_and_parse", fetch_and_parse_node)
 qa_workflow.add_node("summarize", summarize_repo_node)
 
 qa_workflow.set_entry_point("query_analyzer")
 qa_workflow.add_edge("query_analyzer", "analyze_tree")
-qa_workflow.add_edge("analyze_tree", "summarize")
+qa_workflow.add_edge("analyze_tree", "fetch_and_parse")
+qa_workflow.add_edge("fetch_and_parse", "summarize")
 qa_workflow.add_edge("summarize", END)
 
 qa_app = qa_workflow.compile()

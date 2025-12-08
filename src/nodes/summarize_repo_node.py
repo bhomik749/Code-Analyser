@@ -9,7 +9,7 @@ async def summarize_repo_node(state: dict) -> dict:
     into a multi-chat answer.
     """
 
-    print("Initializing Summarize Repo Node...") 
+    # print("Initializing Summarize Repo Node...") 
 
     llm = state.get("llm")
     global_context = state.get("global_context", "")
@@ -29,7 +29,7 @@ async def summarize_repo_node(state: dict) -> dict:
     for msg in reversed(state.get("messages", [])):
         if isinstance(msg, HumanMessage):
             user_query = msg.content
-            print(user_query)
+            # print(user_query)
             break
     
     if not user_query:
@@ -39,10 +39,11 @@ async def summarize_repo_node(state: dict) -> dict:
     merged_chunks = []
 
     selected_paths = [f.get("path") for f in selected_files if isinstance(f, dict)]
-    selected_paths_preview = "\n".join(f"- {p}" for p in selected_paths[:20])
+    # selected_paths_preview = "\n".join(f"- {p}" for p in selected_paths[:20])
 
-    for f in parsed_files[:MAX_CHUNKS]:
+    for f in parsed_files: #parsed_files[:MAX_CHUNKS]:
         path = f.get("path", "<unknown>")
+        print(f"these are the files which are used by summarizer node: {path}")
         parsed_text = f.get("parsed", "")
         merged_chunks.append(f"\n### File: {path}\n{parsed_text}\n")
 
@@ -78,7 +79,7 @@ async def summarize_repo_node(state: dict) -> dict:
             {global_context}
 
             Selected Files (preview):
-            {selected_paths_preview}
+            {selected_paths}
 
             Parsed File Content (truncated to {MAX_CHUNKS} files):
             {merged_text}

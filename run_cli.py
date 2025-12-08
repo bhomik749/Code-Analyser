@@ -26,14 +26,14 @@ async def load_repo(repo_url: str) -> Agent_State:
         "llm": LLM,
     }
 
-    print(f"\nStarting analysis for repo:\n{repo_url}\n")
+    # print(f"\nStarting analysis for repo:\n{repo_url}\n")
 
     async for step in index_app.astream(state):
         # step is a dict: {"node_name": updated_state}
         # print(step)
-        node_name, delta = list(step.items())[0]
+        _, delta = list(step.items())[0]
         # print(state)
-        print(f"Indexing Node executed: {node_name}")
+        # print(f"Indexing Node executed: {node_name}")
         state.update(delta)
 
         # Optionally print the node's output
@@ -58,8 +58,8 @@ async def qa(repo_state: Agent_State, question: str) -> Agent_State:
     }
 
     async for step in qa_app.astream(state):
-        node_name, delta = list(step.items())[0]
-        print(f"QA Node excuted: {node_name}")
+        _, delta = list(step.items())[0]
+        # print(f"QA Node excuted: {node_name}")
         state.update(delta)
 
     return state
@@ -69,7 +69,7 @@ async def qa_loop(repo_state: Agent_State):
 
     while True:
         try:
-            user_query = input("\nYou(or 'exit' to 'quit): ").strip()
+            user_query = input("\nYou(or 'exit' to 'quit): \n\n").strip()
         except(EOFError, KeyboardInterrupt):
             print("\nExiting.")
             break

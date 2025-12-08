@@ -11,7 +11,7 @@ async def global_context_node(state: dict)->dict: #AgentState)->AgentState
     relationships.
     """
 
-    print("-----Initializing Global Context Node-----")
+    # print("-----Initializing Global Context Node-----")
     # print("state variable", state)
     repo_tree = state.get("repo_tree")
     # print(f"repo_tree contains: {repo_tree}")
@@ -72,5 +72,5 @@ async def global_context_node(state: dict)->dict: #AgentState)->AgentState
     response = await llm.ainvoke([system_msg, human_msg])
     global_summ = response.content.strip()
 
-    print("||| Global Context Summary created successfully |||")
+    # print("||| Global Context Summary created successfully |||")
     return {"global_context": global_summ}

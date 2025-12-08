@@ -10,7 +10,7 @@ async def fetch_repo_metadata_node(state: dict) -> dict:
     - Updates state with repo_tree
     """
 
-    print("Initializing Fetch Repo Metadata Node...")
+    # print("Initializing Fetch Repo Metadata Node...")
 
     repo_url = state.get("url", None)
     if not repo_url:
@@ -24,7 +24,7 @@ async def fetch_repo_metadata_node(state: dict) -> dict:
         parser = GitRepoParser()
         repo_tree = parser.get_dir_tree(repo_url)
 
-        print("Repo metadata tree fetched successfully!")
+        # print("Repo metadata tree fetched successfully!")
         # print(f"State Variable: {state}")
         return {
             "repo_tree": repo_tree,

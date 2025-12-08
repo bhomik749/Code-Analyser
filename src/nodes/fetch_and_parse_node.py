@@ -22,14 +22,12 @@ async def fetch_and_parse_node(state: dict) -> dict:
     """
     Fetches file content for 'selected_files' and parses each file using
     the appropriate tool for its extension.
-
-    Output stored in:
-      state["parsed_files"] = [{"path": ..., "parsed": ...}, ...]
     """
 
-    print("Initializing Fetch & Parse Node...")
+    # print("Initializing Fetch & Parse Node...")
 
     selected_files = state.get("selected_files", [])
+    
     if not selected_files:
         return {
             "parsed_files": [],
@@ -37,9 +35,11 @@ async def fetch_and_parse_node(state: dict) -> dict:
                 SystemMessage(content="No files selected for parsing.")
             ]
         }
-
-    parsed_results = []
-
+    
+    parsed_files = state.get("parsed_files")
+    parsed_paths = {pf["path"] for pf in parsed_files if "path" in pf}
+    new_pf = []
+    
     for file_meta in selected_files:
         path = file_meta["path"]
         ext = file_meta["ext"].lower()
@@ -47,10 +47,16 @@ async def fetch_and_parse_node(state: dict) -> dict:
 
         print(f"Fetching file: {path}")
 
-        # Fetch file content from GitHub
+        if not path or not url:
+            continue
+        if path in parsed_paths:
+            continue
+
+        print(f"Fetching File: {path}")
+
         raw_content = fetch_blob_content(url)
         if not raw_content:
-            parsed_results.append({
+            new_pf.append({
                 "path": path,
                 "parsed": f"<Failed to fetch content for {path}>"
             })
@@ -63,22 +69,24 @@ async def fetch_and_parse_node(state: dict) -> dict:
             try:
                 print("Checking Execution of parser tools")
                 parsed = parser_fn(raw_content)
+                print(f"{path} file parsed using {ext} parser utility function")
             except Exception as e:
                 parsed = f"<Error parsing file {path}: {e}>"
         else:
             parsed = raw_content[:5000]  # token-safe limit
 
-        parsed_results.append({
+        new_pf.append({
             "path": path,
             "ext": ext,
             "parsed": parsed
         })
-    print(f"Parsed {len(parsed_results)} files.")
+        
+    updated_pf = new_pf + parsed_files
+    print(f"Total parsed files: {len(updated_pf)} files.")
 
     return {
-        "parsed_files": parsed_results,
+        "parsed_files": parsed_files + new_pf,
         "messages": state.get("messages", []) + [
-            SystemMessage(content=f"Fetched & parsed {len(parsed_results)} files.")
+            SystemMessage(content=f"Fetched & parsed {len(new_pf)} files.")
         ]
     }
-
