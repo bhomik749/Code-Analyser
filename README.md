@@ -10,6 +10,10 @@ This project is under active development.
 
 ### Overview
 
+The overall flow of the pipeline is illustrated in the image below:
+
+<img width="2176" height="2395" alt="code_analyser_pipeline" src="https://github.com/user-attachments/assets/5e4530c5-189a-4796-a9a5-a3a8241cfc4a" />
+
 Code-Analyser performs a structured series of steps to understand and query any codebase:
 
 - Fetches a full GitHub repository structure  
@@ -17,6 +21,7 @@ Code-Analyser performs a structured series of steps to understand and query any 
 - Downloads and parses code files  
 - Extracts functions, classes, variables, and imports  
 - Builds a structured internal representation  
+
 - Applies specialized skills depending on the question  
 - Produces an accurate, context-aware answer
 
