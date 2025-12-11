@@ -47,7 +47,7 @@ async def summarize_repo_node(state: dict) -> dict:
         parsed_text = f.get("parsed", "")
         merged_chunks.append(f"\n### File: {path}\n{parsed_text}\n")
 
-    merged_text = "\n".join(merged_chunks)
+    merged_text = "\n".join(merged_chunks[:8000])
 
     system_msg = SystemMessage(content="""
             "You are an expert software engineer and code analysis assistant. "
