@@ -42,7 +42,8 @@ The system is split into two workflows:
 
 Runs ONCE per repository when the user loads a new repo.
 
-<img width="1662" height="1922" alt="workflow" src="https://github.com/user-attachments/assets/ce6e87c6-5131-47c7-b8e5-032e042a2dbf" />
+<img width="1661" height="213" alt="workflow" src="https://github.com/user-attachments/assets/92945a95-75af-4954-86d1-7d1d74623f1c" />
+
 
 **Purpose**
 
@@ -58,8 +59,7 @@ Runs ONCE per repository when the user loads a new repo.
   
 Runs for EVERY question the user asks
 
-<img width="1662" height="1922" alt="wor" src="https://github.com/user-attachments/assets/7fb48af0-d90e-4c53-a592-556af2be666e" />
-
+<img width="1661" height="321" alt="wor" src="https://github.com/user-attachments/assets/f942490b-3969-4f70-a8ac-17075a43cbcd" />
 
 
 **Purpose**
