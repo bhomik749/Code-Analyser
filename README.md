@@ -42,7 +42,7 @@ The system is split into two workflows:
 
 Runs ONCE per repository when the user loads a new repo.
 
-<img width="256" height="1024" alt="indexing_pipeline_flowchart" src="https://github.com/user-attachments/assets/f5a0d609-2e1e-42d1-9739-b7df265e1d41" />
+<img width="1662" height="1922" alt="workflow" src="https://github.com/user-attachments/assets/ce6e87c6-5131-47c7-b8e5-032e042a2dbf" />
 
 **Purpose**
 
@@ -58,7 +58,8 @@ Runs ONCE per repository when the user loads a new repo.
   
 Runs for EVERY question the user asks
 
-<img width="256" height="1024" alt="QA_pipeline_flowchart" src="https://github.com/user-attachments/assets/f6c327c7-2a4a-412e-9dbe-bf1bf2d9f27d" />
+<img width="1662" height="1922" alt="wor" src="https://github.com/user-attachments/assets/7fb48af0-d90e-4c53-a592-556af2be666e" />
+
 
 
 **Purpose**
