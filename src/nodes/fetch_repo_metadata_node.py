@@ -42,5 +42,3 @@ async def fetch_repo_metadata_node(state: dict) -> dict:
                 SystemMessage(content=err)
             ]
         }
-
-

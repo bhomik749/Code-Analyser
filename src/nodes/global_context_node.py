@@ -39,8 +39,9 @@ async def global_context_node(state: dict)->dict: #AgentState)->AgentState
             headers.append(f"{file_meta['path']}:\n{snippet}\n")
         except Exception as e:
             headers.append(f"{file_meta['path']}: <Error in fetching snippet: {e}>")
+    
     tree_summ = "\n".join([f"- {f['path']} ({f['ext']}, {f['size_kb']} KB)" for f in flattened[:60]])
-    # print("tree_summ variable contains: ", tree_summ)
+
     prompt = f"""
                 You are an expert software architect. 
                 Below is a summary of a GitHub repository structure and small snippets from key files.

@@ -17,7 +17,7 @@ class Agent_State(TypedDict):
     repo_tree: Dict[str, any]
     global_context: Union[str, None]
     selected_files: List[Dict[str, any]]
-    skipped_files: List[str]
+    unselected_files: List[str]
     parsed_files: List[Dict[str, str]]
     intent: str
     keywords: List[str]

@@ -17,7 +17,7 @@ async def load_repo(repo_url: str) -> Agent_State:
         "repo_tree": {},
         "global_context": None,
         "selected_files": [],
-        "skipped_files": [],
+        "unselected_files": [],
         "parsed_files": [],
         "intent": "",
         "keywords": [],
@@ -53,7 +53,7 @@ async def qa(repo_state: Agent_State, question: str) -> Agent_State:
         "keywords": [],
         "targets": {},
         "selected_files": [],
-        "skipped_files": [],
+        "unselected_files": [],
         "summary": "",
     }
 

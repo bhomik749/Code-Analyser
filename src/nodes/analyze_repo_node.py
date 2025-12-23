@@ -2,11 +2,17 @@ import re
 from langchain_core.messages import SystemMessage, HumanMessage
 
 from src.utils.flatten_tree import flatten_tree
-from src.config.settings import MAX_SIZE_KB, IMPORTANT_EXT, IMPORTANT_NAMES
+from src.config.settings import IMPORTANT_EXT, IMPORTANT_NAMES
 
 def matches_keywords(path, keywords):
         path_lower = path.lower()
         return any(kw.lower() in path_lower for kw in keywords)
+
+def add_unique(meta, selected_list, selected_paths: set):
+    p = meta["path"].lower()
+    if p not in selected_paths:
+        selected_paths.add(p)
+        selected_list.append(meta)
 
 async def analyze_tree_node(state: dict) -> dict:
     """
@@ -27,7 +33,8 @@ async def analyze_tree_node(state: dict) -> dict:
     
     if not repo_tree:
         return {
-                "selected": [],
+                "selected_files": [],
+                "unselected_files": [],
                 "messages": state.get("messages", []) + [
                     SystemMessage(content="No repository tree available.")
                 ]}
@@ -40,96 +47,74 @@ async def analyze_tree_node(state: dict) -> dict:
             user_query = msg.content.lower()
             break
 
-    # print(f"Latest user query: {user_query}")
-
-    # Get words like ["train", "metrics", "dataset", "model"]
     query_keywords = re.findall(r"[a-zA-Z_]+", user_query)
-    # print(f"Extracted query keywords: {query_keywords}")
 
     selected = state.get("selected_files")
-    skipped = state.get("skipped_files")
+    selected_paths = set()
+    unselected = state.get("unselected_files")
 
     for meta in flattened:
         path = meta["path"].lower()
-        # size = meta["size_kb"]
-        ext  = meta["ext"].lower()
+        ext = meta["ext"].lower()
 
-        # Skip too-large files
-        # if size > MAX_SIZE_KB:
-        #     skipped.append(path)
-        #     continue
+        selected_files = False
 
-        # Always include important names
-        if any(key in path for key in IMPORTANT_NAMES):
-            selected.append(meta)
-            continue
+        # 1) Always include important names
+        if any(name in path for name in IMPORTANT_NAMES):
+            selected_files = True
 
-        # Include files matching keywords in user query
-        if any(key in path for key in query_keywords):
-            selected.append(meta)
-            continue
+        # 2) Match keywords from user query
+        elif any(k in path for k in query_keywords):
+            selected_files = True
 
-        # Keep primary code/documentation files
-        if ext in IMPORTANT_EXT:
-            selected.append(meta)
-        else:
-            skipped.append(path)
+        # 3) Keep primary code/docs
+        elif ext in IMPORTANT_EXT:
+            selected_files = True
 
+        # 4) Intent-specific boosts
         if intent == "function_usage":
             fn = targets.get("function")
-            if fn:
-                if fn.lower() in path.lower():
-                    selected.append(meta)
-                    continue
-            # fallback to keyword match
-            if matches_keywords(path, keywords):
-                selected.append(meta)
-                continue
+            if fn and fn.lower() in path:
+                selected_files = True
+            elif matches_keywords(path, keywords):
+                selected_files = True
 
-        # 2. TYPE LOOKUP
         elif intent == "type_lookup":
             var = targets.get("variable")
-            if var:
-                if var.lower() in path.lower():
-                    selected.append(meta)
-                    continue
-            if matches_keywords(path, keywords):
-                selected.append(meta)
-                continue
+            if var and var.lower() in path:
+                selected_files = True
+            elif matches_keywords(path, keywords):
+                selected_files = True
 
-        # 3. DIRECTORY QUESTION
         elif intent == "directory_question":
             directory = targets.get("directory")
             if directory and path.startswith(directory):
-                selected.append(meta)
-                continue
+                selected_files = True
 
-        # 4. PIPELINE FLOW
         elif intent == "pipeline_flow":
-            # prioritize orchestrator-style files
             pipeline_markers = ["train", "main", "pipeline", "runner", "engine"]
-            if any(m in path.lower() for m in pipeline_markers):
-                selected.append(meta)
-                continue
+            if any(m in path for m in pipeline_markers):
+                selected_files = True
 
-        # 5. ARCHITECTURE SUMMARY
         elif intent == "architecture_summary":
-            # prioritize high-level Python files
             if path.count("/") <= 1 and path.endswith(".py"):
-                selected.append(meta)
-                continue
+                selected_files = True
 
-        # 6. FALLBACK: KEYWORD SEARCH
         elif intent == "high_level_summary":
             if matches_keywords(path, keywords):
-                selected.append(meta)
-                continue
+                selected_files = True
 
-    print(f"\nSelected {len(selected)} files, skipped {len(skipped)}.")
+        # Final push to lists (no duplicates)
+        if selected_files:
+            add_unique(meta, selected, selected_paths)
+        else:
+            unselected.append(meta)
+
+    print(f"\nSelected {len(selected)} files, unselected {len(unselected)}.")
 
     return {
-        "selected": selected,
-        "skipped_files": skipped,
+        "selected_files": selected,
+        "unselected_files": unselected,
         "messages": state.get("messages", []) + [
             SystemMessage(content=f"Selected {len(selected)} files based on query: '{user_query}'.")
         ]
